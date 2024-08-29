@@ -14,6 +14,14 @@ uploaded_file = st.file_uploader("Elige una imagen de la factura", type=["png", 
 if uploaded_file is not None:
     # Abrir la imagen
     img = Image.open(uploaded_file)
+
+    # Ajustar el tamaño de la imagen
+    max_height = 600  # Altura máxima deseada en píxeles
+    img_width, img_height = img.size
+    if img_height > max_height:
+        new_height = max_height
+        new_width = int((max_height / img_height) * img_width)
+        img = img.resize((new_width, new_height))
     
     # Mostrar la imagen en Streamlit
     st.image(img, caption="Factura cargada", use_column_width=True)
@@ -79,15 +87,12 @@ if uploaded_file is not None:
         for match in matches:
             cantidad, unidad, descripcion, valor_unitario = match
             
-            # Convertir la cantidad a flotante primero
+            # Convertir los valores a flotantes para la multiplicación
             cantidad = float(cantidad)
             valor_unitario = float(valor_unitario)
+            total = cantidad * valor_unitario
             
-            # Convertir la cantidad a entero después del procesamiento
-            cantidad_entera = int(round(cantidad))
-            total = cantidad_entera * valor_unitario
-            
-            st.write(f"**Cantidad:** {cantidad_entera}")
+            st.write(f"**Cantidad:** {cantidad}")
             st.write(f"**Unidad de Medida:** {unidad}")
             st.write(f"**Descripción:** {descripcion.strip()}")
             st.write(f"**Valor Unitario:** S/ {valor_unitario:.2f}")
@@ -95,7 +100,7 @@ if uploaded_file is not None:
             st.write("---")
             
             detalles_compra.append({
-                "Cantidad": cantidad_entera,
+                "Cantidad": cantidad,
                 "Unidad de Medida": unidad,
                 "Descripción": descripcion.strip(),
                 "Valor Unitario": valor_unitario,
@@ -118,7 +123,7 @@ if uploaded_file is not None:
     # Exportar a CSV
     if st.button("Exportar a CSV"):
         df = pd.DataFrame(detalles_compra)
-        csv = df.to_csv(index=False).encode('utf-8')
+        csv = df.to_csv(index=False)
         st.download_button("Descargar CSV", csv, "detalles_compra.csv", "text/csv")
     
     # Exportar a Excel
@@ -135,4 +140,4 @@ if uploaded_file is not None:
         txt_file = io.StringIO()
         txt_file.write(datos_texto)
         txt_file.seek(0)
-        st.download_button("Descargar TXT", txt_file.getvalue(), "detalles_compra.txt", "text/plain")
+        st.download_button("Descargar TXT", txt_file, "detalles_compra.txt", "text/plain")
