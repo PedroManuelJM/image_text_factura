@@ -79,12 +79,15 @@ if uploaded_file is not None:
         for match in matches:
             cantidad, unidad, descripcion, valor_unitario = match
             
-            # Convertir los valores a flotantes para la multiplicación
+            # Convertir la cantidad a flotante primero
             cantidad = float(cantidad)
             valor_unitario = float(valor_unitario)
-            total = cantidad * valor_unitario
             
-            st.write(f"**Cantidad:** {cantidad}")
+            # Convertir la cantidad a entero después del procesamiento
+            cantidad_entera = int(round(cantidad))
+            total = cantidad_entera * valor_unitario
+            
+            st.write(f"**Cantidad:** {cantidad_entera}")
             st.write(f"**Unidad de Medida:** {unidad}")
             st.write(f"**Descripción:** {descripcion.strip()}")
             st.write(f"**Valor Unitario:** S/ {valor_unitario:.2f}")
@@ -92,7 +95,7 @@ if uploaded_file is not None:
             st.write("---")
             
             detalles_compra.append({
-                "Cantidad": cantidad,
+                "Cantidad": cantidad_entera,
                 "Unidad de Medida": unidad,
                 "Descripción": descripcion.strip(),
                 "Valor Unitario": valor_unitario,
@@ -133,4 +136,3 @@ if uploaded_file is not None:
         txt_file.write(datos_texto)
         txt_file.seek(0)
         st.download_button("Descargar TXT", txt_file.getvalue(), "detalles_compra.txt", "text/plain")
-
