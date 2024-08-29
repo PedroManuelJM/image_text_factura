@@ -115,7 +115,7 @@ if uploaded_file is not None:
     # Exportar a CSV
     if st.button("Exportar a CSV"):
         df = pd.DataFrame(detalles_compra)
-        csv = df.to_csv(index=False)
+        csv = df.to_csv(index=False).encode('utf-8')
         st.download_button("Descargar CSV", csv, "detalles_compra.csv", "text/csv")
     
     # Exportar a Excel
@@ -132,4 +132,5 @@ if uploaded_file is not None:
         txt_file = io.StringIO()
         txt_file.write(datos_texto)
         txt_file.seek(0)
-        st.download_button("Descargar TXT", txt_file, "detalles_compra.txt", "text/plain")
+        st.download_button("Descargar TXT", txt_file.getvalue(), "detalles_compra.txt", "text/plain")
+
