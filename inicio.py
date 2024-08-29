@@ -35,12 +35,16 @@ if uploaded_file is not None:
     ruc_pattern = r"RUC\s*:\s*(\d+)"
     igv_pattern = r"IGV\s*:\s*S/\s*(\d+\.\d{2})"
     subtotal_pattern = r"Sub Total Ventas\s*:\s*S/\s*(\d+\.\d{2})"
+    #valorventa_pattern = r"Valor Venta\s*:\s*S/\s*(\d+\.\d{2})"
+    #importetotal_pattern = r"Importe Total\s*:\s*S/\s*(\d+\.\d{2})"
     
     # Buscar las coincidencias
     senor_match = re.search(senor_pattern, text)
     ruc_match = re.search(ruc_pattern, text)
     igv_match = re.search(igv_pattern, text)
     subtotal_match = re.search(subtotal_pattern, text)
+    #valorventa_match = re.search(valorventa_pattern, text)
+    #importetotal_match= re.search(importetotal_pattern, text)
     
     # Extraer los datos si son encontrados
     senor = senor_match.group(1) if senor_match else "No encontrado"
@@ -52,15 +56,6 @@ if uploaded_file is not None:
     monto_total_sin_igv = subtotal
     monto_total_con_igv = subtotal + igv
     
-    # Mostrar los resultados en la segunda columna
-
-    st.subheader("Resultados Extraídos:")
-    st.write(f"**Señor(es):** {senor}")
-    st.write(f"**RUC:** {ruc}")
-    st.write(f"**Subtotal (sin IGV):** S/ {monto_total_sin_igv:.2f}")
-    st.write(f"**IGV:** S/ {igv:.2f}")
-    st.write(f"**Monto Total (con IGV):** S/ {monto_total_con_igv:.2f}")
-        
     # Buscar una posible fecha con errores similares a '0110472024'
     fecha_emision = re.search(r'Fecha de Emisión\s*:?(\d{2})[^\d]*(\d{2})[^\d]*(\d{4})', text)
         
@@ -73,6 +68,15 @@ if uploaded_file is not None:
             st.write(f"**Fecha de Emisión:** {fecha}")
     else:
             st.write("Fecha de Emisión no encontrada.")
+
+    # Mostrar los resultados en la segunda columna
+
+    st.subheader("Resultados Extraídos:")
+    st.write(f"**Señor(es):** {senor}")
+    st.write(f"**RUC:** {ruc}")
+    st.write(f"**Subtotal (sin IGV):** S/ {monto_total_sin_igv:.2f}")
+    st.write(f"**IGV:** S/ {igv:.2f}")
+    st.write(f"**Monto Total (con IGV):** S/ {monto_total_con_igv:.2f}")       
         
      # Patrón para extraer cantidad, unidad, descripción y valor unitario
     pattern = r"(\d+\.\d{2})\s+(\w+)\s+([\w\s]+)\s+(\d+\.\d{2})"
