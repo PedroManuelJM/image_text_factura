@@ -5,17 +5,22 @@ import re
 import pandas as pd
 import io
 
-# Título de la aplicación
-st.title("Extracción de datos de facturas con OCR")
+# Dividir la pantalla en dos columnas
+col1, col2 = st.columns(2)
 
-# Subir una imagen
-uploaded_file = st.file_uploader("Elige una imagen de la factura", type=["png", "jpg", "jpeg"])
+# Título de la aplicación en la primera columna
+with col1:
+    st.title("Extracción de datos de facturas con OCR")
+
+# Subir una imagen en la segunda columna
+with col2:
+    uploaded_file = st.file_uploader("Elige una imagen de la factura", type=["png", "jpg", "jpeg"])
 
 if uploaded_file is not None:
     # Abrir la imagen
     img = Image.open(uploaded_file)
     
-    # Dividir la pantalla en dos columnas
+    # Dividir el área restante en dos columnas
     col1, col2 = st.columns(2)
     
     # Mostrar la imagen en la primera columna
