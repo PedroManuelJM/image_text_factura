@@ -1,12 +1,9 @@
 import streamlit as st
-from utils import agregar_estilo_css
 from PIL import Image
 import pytesseract
 import re
 import pandas as pd
 import io
-
-agregar_estilo_css()  # Aplica los estilos CSS
 
 # Dividir la pantalla en dos columnas
 col1, col2 = st.columns(2)
