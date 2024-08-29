@@ -1,5 +1,5 @@
-streamlit
+streamlit==0.73.0
+numpy==1.18.5
 pillow
-pytesseract 
-tesseract-ocr
-tesseract-ocr-spa
+pytesseract==0.3.8
+regex==2020.10.28
