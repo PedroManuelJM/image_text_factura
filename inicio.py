@@ -58,7 +58,9 @@ if uploaded_file is not None:
     
     # Buscar una posible fecha con errores similares a '0110472024'
     fecha_emision = re.search(r'Fecha de Emisión\s*:?(\d{2})[^\d]*(\d{2})[^\d]*(\d{4})', text)
-        
+
+    st.subheader("Resultados Extraídos:")    
+    
     # Si se encuentra la fecha, reconstruirla
     if fecha_emision:
             dia = fecha_emision.group(1)
@@ -71,7 +73,6 @@ if uploaded_file is not None:
 
     # Mostrar los resultados en la segunda columna
 
-    st.subheader("Resultados Extraídos:")
     st.write(f"**Señor(es):** {senor}")
     st.write(f"**RUC:** {ruc}")
     st.write(f"**Subtotal (sin IGV):** S/ {monto_total_sin_igv:.2f}")
