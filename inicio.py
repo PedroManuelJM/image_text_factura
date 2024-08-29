@@ -13,7 +13,7 @@ with col1:
     st.title("Extracción de datos de facturas con OCR")
 
 # Subir una imagen en la segunda columna
-with col2:
+with col1:
     uploaded_file = st.file_uploader("Elige una imagen de la factura", type=["png", "jpg", "jpeg"])
 
 if uploaded_file is not None:
