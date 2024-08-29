@@ -1,9 +1,11 @@
 import streamlit as st
+from utils import agregar_estilo_css
 from PIL import Image
 import pytesseract
 import re
 import pandas as pd
 import io
+
 
 # Dividir la pantalla en dos columnas
 col1, col2 = st.columns(2)
@@ -11,6 +13,8 @@ col1, col2 = st.columns(2)
 # Título de la aplicación en la primera columna
 
 st.title("Extracción de datos de facturas con OCR")
+
+agregar_estilo_css()  # Aplica los estilos CSS
 
 # Subir una imagen en la segunda columna
 
