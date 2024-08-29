@@ -1,0 +1,77 @@
+import os
+from bing_image_downloader import downloader
+import streamlit as st
+from PIL import Image
+from io import BytesIO
+import zipfile
+
+# Función para descargar imágenes usando bing_image_downloader
+def descargar_imagenes(keyword, num_images):
+    carpeta_descarga = f"downloads/{keyword}"
+    os.makedirs(carpeta_descarga, exist_ok=True)
+    
+    try:
+        # Descargar imágenes
+        downloader.download(
+            keyword,
+            limit=num_images,
+            output_dir='downloads',
+            adult_filter_off=True
+        )
+        
+        imagenes_descargadas = [
+            os.path.join(carpeta_descarga, f) for f in os.listdir(carpeta_descarga)
+            if f.endswith(('jpg', 'jpeg', 'png'))
+        ]
+        
+        if imagenes_descargadas:
+            st.success(f"Imágenes de '{keyword}' descargadas exitosamente.")
+            return imagenes_descargadas
+        else:
+            st.error("No se encontraron imágenes.")
+            return []
+    except Exception as e:
+        st.error(f"Ocurrió un error: {e}")
+        return []
+
+# Función para crear un archivo ZIP de las imágenes
+def zip_imagenes(imagenes, keyword):
+    zip_path = f"downloads/{keyword}/{keyword}_imagenes.zip"
+    with zipfile.ZipFile(zip_path, 'w') as zipf:
+        for img in imagenes:
+            zipf.write(img, os.path.basename(img))
+    return zip_path
+
+# Interfaz de usuario de Streamlit
+def main():
+    st.title("Descarga de Imágenes")
+    
+    keyword = st.text_input("Ingrese la palabra clave de búsqueda", "Perro")
+    num_images = st.number_input("Número de imágenes a descargar", min_value=1, max_value=50, value=5)
+    
+    if st.button("Descargar"):
+        with st.spinner("Descargando..."):
+            imagenes_descargadas = descargar_imagenes(keyword, num_images)
+            
+            if imagenes_descargadas:
+                st.subheader("Imágenes descargadas:")
+                
+                # Mostrar imágenes en una cuadrícula
+                cols = st.columns(3)  # Puedes ajustar el número de columnas
+                for i, img_path in enumerate(imagenes_descargadas):
+                    with cols[i % 3]:  # Distribuir las imágenes en columnas
+                        image = Image.open(img_path)
+                        st.image(image, caption=os.path.basename(img_path), use_column_width=True)
+                
+                # Botón para descargar todas las imágenes como un ZIP
+                zip_path = zip_imagenes(imagenes_descargadas, keyword)
+                with open(zip_path, "rb") as file:
+                    st.download_button(
+                        label="Descargar todas las imágenes",
+                        data=file,
+                        file_name=f"{keyword}_imagenes.zip",
+                        mime="application/zip"
+                    )
+
+if __name__ == "__main__":
+    main()
