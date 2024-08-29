@@ -2,6 +2,8 @@ import streamlit as st
 from PIL import Image
 import pytesseract
 import re
+import pandas as pd
+import io
 
 # Título de la aplicación
 st.title("Extracción de datos de facturas con OCR")
@@ -68,6 +70,9 @@ if uploaded_file is not None:
     # Buscar las coincidencias
     matches = re.findall(pattern, text)
     
+    # Lista para almacenar detalles de la compra
+    detalles_compra = []
+    
     # Mostrar los resultados y realizar la multiplicación
     if matches:
         st.subheader("Detalles de la Compra:")
@@ -85,5 +90,46 @@ if uploaded_file is not None:
             st.write(f"**Valor Unitario:** S/ {valor_unitario:.2f}")
             st.write(f"**Total (Cantidad x Valor Unitario):** S/ {total:.2f}")
             st.write("---")
+            
+            detalles_compra.append({
+                "Cantidad": cantidad,
+                "Unidad de Medida": unidad,
+                "Descripción": descripcion.strip(),
+                "Valor Unitario": valor_unitario,
+                "Total": total
+            })
     else:
         st.write("No se encontraron coincidencias en la descripción del producto.")
+    
+    # Crear texto para copiar al portapapeles
+    datos_texto = f"Señor(es): {senor}\nRUC: {ruc}\nSubtotal (sin IGV): S/ {monto_total_sin_igv:.2f}\nIGV: S/ {igv:.2f}\nMonto Total (con IGV): S/ {monto_total_con_igv:.2f}\nFecha de Emisión: {fecha}\n"
+    if detalles_compra:
+        datos_texto += "\nDetalles de la Compra:\n"
+        for item in detalles_compra:
+            datos_texto += f"Cantidad: {item['Cantidad']}\nUnidad de Medida: {item['Unidad de Medida']}\nDescripción: {item['Descripción']}\nValor Unitario: S/ {item['Valor Unitario']:.2f}\nTotal: S/ {item['Total']:.2f}\n---\n"
+    
+    # Mostrar área de texto para copiar
+    st.subheader("Copiar Datos")
+    st.text_area("Datos extraídos:", datos_texto, height=300)
+    
+    # Exportar a CSV
+    if st.button("Exportar a CSV"):
+        df = pd.DataFrame(detalles_compra)
+        csv = df.to_csv(index=False)
+        st.download_button("Descargar CSV", csv, "detalles_compra.csv", "text/csv")
+    
+    # Exportar a Excel
+    if st.button("Exportar a Excel"):
+        df = pd.DataFrame(detalles_compra)
+        excel_file = io.BytesIO()
+        with pd.ExcelWriter(excel_file, engine='xlsxwriter') as writer:
+            df.to_excel(writer, index=False, sheet_name='Detalles')
+        excel_file.seek(0)
+        st.download_button("Descargar Excel", excel_file, "detalles_compra.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    
+    # Exportar a TXT
+    if st.button("Exportar a TXT"):
+        txt_file = io.StringIO()
+        txt_file.write(datos_texto)
+        txt_file.seek(0)
+        st.download_button("Descargar TXT", txt_file, "detalles_compra.txt", "text/plain")
